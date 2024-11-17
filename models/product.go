@@ -7,4 +7,5 @@ type Product struct {
 	Price       float64 `db:"price" json:"price"`
 	Stock       int     `db:"stock" json:"stock"`
 	ImageURL    string  `db:"image_url" json:"image_url"`
+	IsFavorite  bool    `db:"is_favorite" json:"is_favorite"`
 }

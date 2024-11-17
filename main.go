@@ -18,8 +18,8 @@ func main() {
 	router := gin.Default()
 
 	// Роуты для продуктов
-	router.GET("/products", handlers.GetProducts(db))
-	router.GET("/products/:id", handlers.GetProduct(db))
+	router.GET("/products/:userId", handlers.GetProducts(db))
+	router.GET("/products/:userId/:product_id", handlers.GetProduct(db))
 	router.POST("/products", handlers.CreateProduct(db))
 	router.PUT("/products/:id", handlers.UpdateProduct(db))
 	router.DELETE("/products/:id", handlers.DeleteProduct(db))

@@ -15,7 +15,7 @@ func GetFavorites(db *sqlx.DB) gin.HandlerFunc {
 
 		err := db.Select(
 			&products,
-			`SELECT p.product_id, name, description, price, stock, image_url FROM favorites f
+			`SELECT p.product_id, name, description, price, stock, image_url, true AS is_favorite FROM favorites f
 			JOIN product p ON f.product_id = p.product_id
 			WHERE user_id = $1`,
 			userId)

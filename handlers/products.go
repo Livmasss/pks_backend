@@ -12,8 +12,17 @@ import (
 // Получение списка всех продуктов
 func GetProducts(db *sqlx.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+
 		var products []models.Product
-		err := db.Select(&products, "SELECT * FROM product")
+		err := db.Select(&products, `
+		SELECT p.product_id, p.name, p.description, p.price, p.stock, p.image_url,
+		EXISTS (
+			SELECT 1 
+			FROM Favorites f 
+			WHERE f.product_id = p.product_id AND f.user_id = 1
+		) AS is_favorite
+		FROM Product p;
+	`)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error":   "Ошибка получения списка продуктов",
@@ -28,15 +37,28 @@ func GetProducts(db *sqlx.DB) gin.HandlerFunc {
 // Получение одного продукта по его ID
 func GetProduct(db *sqlx.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		idStr := c.Param("id")
-		id, err := strconv.Atoi(idStr)
+		userId := c.Param("user_id")
+		productId := c.Param("product_id")
+
+		_, err := strconv.Atoi(userId)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный ID продукта"})
+			return
+		}
+		_, err = strconv.Atoi(productId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный ID продукта"})
 			return
 		}
 
 		var product models.Product
-		err = db.Get(&product, "SELECT * FROM Product WHERE product_id = $1", id)
+		err = db.Get(&product, `
+		SELECT p.product_id, name, description, price, stock, image_url, 
+		FROM Product p
+		JOIN favorites f ON f.product_id = p.product_id
+		WHERE product_id = $2`,
+			userId, productId)
+
 		if err != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Продукт не найден"})
 			return
@@ -54,7 +76,7 @@ func CreateProduct(db *sqlx.DB) gin.HandlerFunc {
 			return
 		}
 
-		query := `INSERT INTO Product (name, description, price, stock, image_url) 
+		query := `INSERT INTO Product (name, description, price, stock, image_url)
                   VALUES (:name, :description, :price, :stock, :image_url) RETURNING product_id`
 
 		rows, err := db.NamedQuery(query, &product)
