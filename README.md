@@ -19,6 +19,8 @@ CREATE TABLE Users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+
+
 -- Создаем таблицу для продуктов
 CREATE TABLE Product (
     product_id SERIAL PRIMARY KEY,
