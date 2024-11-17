@@ -88,8 +88,9 @@ func UpdateProduct(db *sqlx.DB) gin.HandlerFunc {
 		}
 
 		product.ProductID = id
-		query := `UPDATE Product SET name = :name, description = :description, price = :price, 
-                  stock = :stock, image_url = :image_url WHERE product_id = :product_id`
+		query := `UPDATE Product
+		SET name = :name, description = :description, price = :price, stock = :stock, image_url = :image_url
+		WHERE product_id = :product_id`
 
 		_, err = db.NamedExec(query, &product)
 		if err != nil {
