@@ -27,6 +27,7 @@ func main() {
 	// Роуты для корзины
 	router.GET("/cart/:userId", handlers.GetCart(db))
 	router.POST("/cart/:userId", handlers.AddToCart(db))
+	router.PUT("/cart/:userId", handlers.DecreaseCartQuantity(db))
 	router.DELETE("/cart/:userId/:productId", handlers.RemoveFromCart(db))
 
 	// Роуты для избранного
