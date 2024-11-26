@@ -12,6 +12,11 @@ import (
 // Получение списка всех продуктов
 func GetProducts(db *sqlx.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		userId := c.Param("userId")
+		println(userId)
+		println(userId)
+		println(userId)
+		println(userId)
 
 		var products []models.Product
 		err := db.Select(&products, `
@@ -19,10 +24,11 @@ func GetProducts(db *sqlx.DB) gin.HandlerFunc {
 		EXISTS (
 			SELECT 1 
 			FROM Favorites f 
-			WHERE f.product_id = p.product_id AND f.user_id = 1
+			WHERE f.product_id = p.product_id AND f.user_id = $1
 		) AS is_favorite
 		FROM Product p;
-	`)
+	`,
+			userId)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{
 				"error":   "Ошибка получения списка продуктов",
@@ -40,12 +46,7 @@ func GetProduct(db *sqlx.DB) gin.HandlerFunc {
 		userId := c.Param("user_id")
 		productId := c.Param("product_id")
 
-		_, err := strconv.Atoi(userId)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный ID продукта"})
-			return
-		}
-		_, err = strconv.Atoi(productId)
+		_, err := strconv.Atoi(productId)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный ID продукта"})
 			return
