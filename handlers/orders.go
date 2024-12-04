@@ -14,23 +14,15 @@ import (
 func GetOrders(db *sqlx.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// Получаем ID из параметров маршрута
-		idStr := c.Param("user_id")
-		log.Println("Полученный параметр idStr:", idStr)
+		id := c.Param("user_id")
+		log.Println("Полученный параметр idStr:", id)
 
 		// Убираем лишние пробелы
-		idStr = strings.TrimSpace(idStr)
-
-		// Преобразуем ID в целое число
-		id, err := strconv.Atoi(idStr)
-		if err != nil {
-			log.Println("Ошибка преобразования idStr в int:", err)
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Некорректный ID пользователя"})
-			return
-		}
+		id = strings.TrimSpace(id)
 
 		// Выполняем запрос к базе данных
 		var orders []models.Order
-		err = db.Select(&orders, "SELECT * FROM orders WHERE user_id = $1", id)
+		err := db.Select(&orders, "SELECT * FROM orders WHERE user_id = $1", id)
 
 		if err != nil {
 			log.Println("Ошибка запроса к базе данных:", err)
@@ -111,8 +103,8 @@ func CreateOrder(db *sqlx.DB) gin.HandlerFunc {
 
 		// Вставляем заказ в таблицу orders
 		queryOrder := `
-			INSERT INTO orders (user_id, total, status, created_at)
-			VALUES (:user_id, :total, :status, :created_at)
+			INSERT INTO orders (user_id, total, status)
+			VALUES (:user_id, :total, :status)
 			RETURNING order_id
 		`
 		rows, err := tx.NamedQuery(queryOrder, &order)
