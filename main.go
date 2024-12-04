@@ -39,6 +39,10 @@ func main() {
 	router.POST("/users", handlers.CreateUser(db))
 	router.GET("/profile/:userId", handlers.GetProfile(db))
 
+	router.GET("/orders/:user_id", handlers.GetOrders(db))
+	router.GET("/orders/:user_id/:order_id", handlers.GetOrderItems(db))
+	router.POST("/orders/:user_id", handlers.CreateOrder(db))
+
 	// Запуск сервера
 	router.Run(":8080")
 }

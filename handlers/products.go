@@ -13,10 +13,6 @@ import (
 func GetProducts(db *sqlx.DB) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userId := c.Param("userId")
-		println(userId)
-		println(userId)
-		println(userId)
-		println(userId)
 
 		var products []models.Product
 		err := db.Select(&products, `
