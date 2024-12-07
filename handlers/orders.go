@@ -139,6 +139,13 @@ func CreateOrder(db *sqlx.DB) gin.HandlerFunc {
 			}
 		}
 
+		userId := c.Param("user_id")
+		_, err = db.Exec("DELETE FROM cart WHERE user_id = $1", userId)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка очистки корзины"})
+			return
+		}
+
 		// Завершаем транзакцию
 		if err := tx.Commit(); err != nil {
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Ошибка сохранения заказа"})
